@@ -2,7 +2,7 @@
   "name": "tacmap",
   "version": "0.0.1",
   "description": "Simulation using Cesium JavaScript library to visualize PLI message traffic for moving units on a map.",
-  "homepage": "http://natomtf.moesol.com/TacMap",
+  "homepage": "http://http://tacmap-neushul.rhcloud.com/",
   "license": "GPL-3.0",
   "repository": {
     "type": "git",
