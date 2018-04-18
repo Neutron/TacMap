@@ -2,7 +2,7 @@
   "name": "tacmap",
   "version": "0.0.1",
   "description": "Simulation using Cesium JavaScript library to visualize PLI message traffic for moving units on a map.",
-  "homepage": "http://tacmap-neushul.rhcloud.com/",
+  "homepage": "https://github.com/mil-oss/TacMap.git",
   "license": "GPL-3.0",
   "repository": {
     "type": "git",
@@ -14,7 +14,7 @@
   },
   "devDependencies": {
     "compression": "1.0.8",
-    "request": "2.36.0",
+    "request": "2.85.0",
     "socket.io-client": "^1.7.4"
   },
   "dependencies": {

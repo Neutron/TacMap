@@ -26,7 +26,7 @@
     //
     var cors = require('cors');
     var http = require('http');
-    var server_port = process.env.OPENSHIFT_NODEJS_PORT || 8080;
+    var server_port = 8080;
     var yargs = require('yargs').options({
         'port': {
             'default': server_port,
@@ -137,7 +137,7 @@
             res.send(code, body);
         });
     });
-    var server_ip_address = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1';
+    var server_ip_address = '127.0.0.1';
     var server = app.listen(server_port, argv.public ? undefined : server_ip_address, function() {
         if (argv.public) {
             console.log('TacMap development server running publicly.  Connect to http://localhost:%d/', server.address().port);
@@ -166,7 +166,7 @@
         process.exit(1);
     });
     server.on('close', function() {
-        console.log('Cesium development server stopped.');
+        console.log('TacMap server stopped.');
     });
     process.on('SIGINT', function() {
         server.close(function() {
@@ -194,14 +194,12 @@
     });
 
     app.post('/json/*', function(req, res) {
-        //console.log(request.body);
         fs.writeFile(__dirname + '/public' + req.url, JSON.stringify(req.body), function() {
             res.end();
         });
     });
 
     app.put('/json/*', function(req, res) {
-        //console.log(req.body);
         fs.writeFile(__dirname + '/public' + req.url, JSON.stringify(req.body), function() {
             res.end();
         });
@@ -246,7 +244,6 @@
             message: 'Msg Socket Ready',
             socketid: socket.id
         });
-
         socket.on('server connected', function(data) {
             console.log("server connect to socket: " + data.socketid + ", mission:" + data.missionid);
             servers.push({
