@@ -1,4 +1,3 @@
-/*global define*/
 define([
         './defined'
     ], function(
@@ -18,7 +17,7 @@ define([
      */
     var getTimestamp;
 
-    if (typeof performance !== 'undefined' && defined(performance.now)) {
+    if (typeof performance !== 'undefined' && typeof performance.now === 'function' && isFinite(performance.now())) {
         getTimestamp = function() {
             return performance.now();
         };

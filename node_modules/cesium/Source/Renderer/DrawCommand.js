@@ -1,4 +1,3 @@
-/*global define*/
 define([
         '../Core/defaultValue',
         '../Core/defined',
@@ -39,7 +38,7 @@ define([
         this._debugOverlappingFrustums = 0;
         this._castShadows = defaultValue(options.castShadows, false);
         this._receiveShadows = defaultValue(options.receiveShadows, false);
-        
+
         this.dirty = true;
         this.lastDirtyTime = 0;
 
@@ -59,6 +58,7 @@ define([
          * minimize the number of frustums needed.
          * </p>
          *
+         * @memberof DrawCommand.prototype
          * @type {Object}
          * @default undefined
          *
@@ -80,6 +80,7 @@ define([
          * The oriented bounding box of the geometry in world space. If this is defined, it is used instead of
          * {@link DrawCommand#boundingVolume} for plane intersection testing.
          *
+         * @memberof DrawCommand.prototype
          * @type {OrientedBoundingBox}
          * @default undefined
          *
@@ -101,6 +102,7 @@ define([
          * When <code>true</code>, the renderer frustum and horizon culls the command based on its {@link DrawCommand#boundingVolume}.
          * If the command was already culled, set this to <code>false</code> for a performance improvement.
          *
+         * @memberof DrawCommand.prototype
          * @type {Boolean}
          * @default true
          */
@@ -122,6 +124,7 @@ define([
          * When <code>undefined</code>, the geometry is assumed to be defined in world space.
          * </p>
          *
+         * @memberof DrawCommand.prototype
          * @type {Matrix4}
          * @default undefined
          */
@@ -140,6 +143,7 @@ define([
         /**
          * The type of geometry in the vertex array.
          *
+         * @memberof DrawCommand.prototype
          * @type {PrimitiveType}
          * @default PrimitiveType.TRIANGLES
          */
@@ -158,6 +162,7 @@ define([
         /**
          * The vertex array.
          *
+         * @memberof DrawCommand.prototype
          * @type {VertexArray}
          * @default undefined
          */
@@ -176,6 +181,7 @@ define([
         /**
          * The number of vertices to draw in the vertex array.
          *
+         * @memberof DrawCommand.prototype
          * @type {Number}
          * @default undefined
          */
@@ -194,6 +200,7 @@ define([
         /**
          * The offset to start drawing in the vertex array.
          *
+         * @memberof DrawCommand.prototype
          * @type {Number}
          * @default 0
          */
@@ -212,6 +219,7 @@ define([
         /**
          * The number of instances to draw.
          *
+         * @memberof DrawCommand.prototype
          * @type {Number}
          * @default 0
          */
@@ -230,6 +238,7 @@ define([
         /**
          * The shader program to apply.
          *
+         * @memberof DrawCommand.prototype
          * @type {ShaderProgram}
          * @default undefined
          */
@@ -248,6 +257,7 @@ define([
         /**
          * Whether this command should cast shadows when shadowing is enabled.
          *
+         * @memberof DrawCommand.prototype
          * @type {Boolean}
          * @default false
          */
@@ -266,6 +276,7 @@ define([
         /**
          * Whether this command should receive shadows when shadowing is enabled.
          *
+         * @memberof DrawCommand.prototype
          * @type {Boolean}
          * @default false
          */
@@ -285,6 +296,7 @@ define([
          * An object with functions whose names match the uniforms in the shader program
          * and return values to set those uniforms.
          *
+         * @memberof DrawCommand.prototype
          * @type {Object}
          * @default undefined
          */
@@ -303,6 +315,7 @@ define([
         /**
          * The render state.
          *
+         * @memberof DrawCommand.prototype
          * @type {RenderState}
          * @default undefined
          */
@@ -321,6 +334,7 @@ define([
         /**
          * The framebuffer to draw to.
          *
+         * @memberof DrawCommand.prototype
          * @type {Framebuffer}
          * @default undefined
          */
@@ -339,6 +353,7 @@ define([
         /**
          * The pass when to render.
          *
+         * @memberof DrawCommand.prototype
          * @type {Pass}
          * @default undefined
          */
@@ -358,6 +373,7 @@ define([
          * Specifies if this command is only to be executed in the frustum closest
          * to the eye containing the bounding volume. Defaults to <code>false</code>.
          *
+         * @memberof DrawCommand.prototype
          * @type {Boolean}
          * @default false
          */
@@ -379,6 +395,7 @@ define([
          * reference to the command, and can be used to selectively execute commands
          * with {@link Scene#debugCommandFilter}.
          *
+         * @memberof DrawCommand.prototype
          * @type {Object}
          * @default undefined
          *
@@ -402,6 +419,7 @@ define([
          * Draws the {@link DrawCommand#boundingVolume} for this command, assuming it is a sphere, when the command executes.
          * </p>
          *
+         * @memberof DrawCommand.prototype
          * @type {Boolean}
          * @default false
          *
@@ -467,7 +485,7 @@ define([
         result._debugOverlappingFrustums = command._debugOverlappingFrustums;
         result._castShadows = command._castShadows;
         result._receiveShadows = command._receiveShadows;
-        
+
         result.dirty = true;
         result.lastDirtyTime = 0;
 

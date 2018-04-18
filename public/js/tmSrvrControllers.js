@@ -456,16 +456,17 @@ TacMapServer.controller('storeCtl', function ($indexedDB, $scope, $http, GeoServ
     };
     //
     stctl.syncResource = function (msnid, $http, url, dB, stctl, GeoService) {
-        $http.get(url).success(function (resdata, status, headers) {
-            var mod = headers()['last-modified'];
+        $http.get(url).then(function (result) {
+            var mod = result.headers()['last-modified'];
             var filename = url.substring(url.lastIndexOf('/') + 1);
-            var jdata = stctl.xj.xml_str2json(resdata);
+            var jdata = stctl.xj.xml_str2json(result.data);
             var mname = jdata.Mission._name;
             var jname = mname.replace(' ', '').toLowerCase();
             stctl.missionlist.push({id: msnid, name: mname, url: 'json/' + jname + '.json'});
             $http.post("/json/missions.json", angular.toJson(stctl.sortByKey(stctl.missionlist, 'id')));
             if (filename === 'DefaultMission.xml') {
-                $http.get('/json/defaultmission.json').success(function (jdata) {
+                $http.get('/json/defaultmission.json').then(function (result) {
+                    var jdata=result.data;
                     dB.openStore('Missions', function (mstore) {
                         mstore.upsert({name: mname, url: 'json/' + jname + '.json', data: jdata}).then(function () {
                                 console.log('init geo');
@@ -485,12 +486,12 @@ TacMapServer.controller('storeCtl', function ($indexedDB, $scope, $http, GeoServ
                         dB.openStore('Resources', function (store) {
                             store.getAllKeys().then(function (keys) {
                                 if (keys.indexOf(filename) === -1) {
-                                    store.upsert({name: filename, url: url, lastmod: mod, data: resdata});
+                                    store.upsert({name: filename, url: url, lastmod: mod, data: jdata});
                                 } else {
                                     store.find(filename).then(function (dbrec) {
                                         if (dbrec.lastmod !== mod) {
                                             console.log('upsert ' + filename);
-                                            store.upsert({name: filename, url: url, lastmod: mod, data: resdata});
+                                            store.upsert({name: filename, url: url, lastmod: mod, data: jdata});
                                         }
                                     });
                                 }
@@ -499,9 +500,7 @@ TacMapServer.controller('storeCtl', function ($indexedDB, $scope, $http, GeoServ
                     });
                 });
             }
-        }).error(function () {
-            console.log('Error getting resource');
-        });
+        })
     };
     //
     MsgService.socket.on('connection', function (data) {
@@ -517,8 +516,8 @@ TacMapServer.controller('storeCtl', function ($indexedDB, $scope, $http, GeoServ
     MsgService.socket.on('init server', function (data) {
         console.log('init server: ' + data.missionid);
         $scope.selmission.name = data.scenarioname;
-        $http.get('xml/missions.xml').success(function (resdata, status, headers) {
-            var msns = stctl.xj.xml_str2json(resdata);
+        $http.get('xml/missions.xml').then(function (resdata, status, headers) {
+            var msns = stctl.xj.xml_str2json(resdata.data);
             for (i = 0; i < msns.Missions.Mission.length; i++) {
                 var u = msns.Missions.Mission[i]._url;
                 var n = msns.Missions.Mission[i]._name;

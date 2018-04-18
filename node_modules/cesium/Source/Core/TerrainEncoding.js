@@ -1,12 +1,11 @@
-/*global define*/
 define([
         './AttributeCompression',
         './Cartesian2',
         './Cartesian3',
         './ComponentDatatype',
+        './defaultValue',
         './defined',
         './Math',
-        './Matrix3',
         './Matrix4',
         './TerrainQuantization'
     ], function(
@@ -14,9 +13,9 @@ define([
         Cartesian2,
         Cartesian3,
         ComponentDatatype,
+        defaultValue,
         defined,
         CesiumMath,
-        Matrix3,
         Matrix4,
         TerrainQuantization) {
     'use strict';
@@ -41,10 +40,11 @@ define([
      * @param {Number} maximumHeight The maximum height.
      * @param {Matrix4} fromENU The east-north-up to fixed frame matrix at the center of the terrain mesh.
      * @param {Boolean} hasVertexNormals If the mesh has vertex normals.
+     * @param {Boolean} [hasWebMercatorT=false] true if the terrain data includes a Web Mercator texture coordinate; otherwise, false.
      *
      * @private
      */
-    function TerrainEncoding(axisAlignedBoundingBox, minimumHeight, maximumHeight, fromENU, hasVertexNormals) {
+    function TerrainEncoding(axisAlignedBoundingBox, minimumHeight, maximumHeight, fromENU, hasVertexNormals, hasWebMercatorT) {
         var quantization;
         var center;
         var toENU;
@@ -137,9 +137,15 @@ define([
          * @type {Boolean}
          */
         this.hasVertexNormals = hasVertexNormals;
+
+        /**
+         * The terrain mesh contains a vertical texture coordinate following the Web Mercator projection.
+         * @type {Boolean}
+         */
+        this.hasWebMercatorT = defaultValue(hasWebMercatorT, false);
     }
 
-    TerrainEncoding.prototype.encode = function(vertexBuffer, bufferIndex, position, uv, height, normalToPack) {
+    TerrainEncoding.prototype.encode = function(vertexBuffer, bufferIndex, position, uv, height, normalToPack, webMercatorT) {
         var u = uv.x;
         var v = uv.y;
 
@@ -165,6 +171,12 @@ define([
             vertexBuffer[bufferIndex++] = compressed0;
             vertexBuffer[bufferIndex++] = compressed1;
             vertexBuffer[bufferIndex++] = compressed2;
+
+            if (this.hasWebMercatorT) {
+                Cartesian2.fromElements(webMercatorT, 0.0, cartesian2Scratch);
+                var compressed3 = AttributeCompression.compressTextureCoordinates(cartesian2Scratch);
+                vertexBuffer[bufferIndex++] = compressed3;
+            }
         } else {
             Cartesian3.subtract(position, this.center, cartesian3Scratch);
 
@@ -174,6 +186,10 @@ define([
             vertexBuffer[bufferIndex++] = height;
             vertexBuffer[bufferIndex++] = u;
             vertexBuffer[bufferIndex++] = v;
+
+            if (this.hasWebMercatorT) {
+                vertexBuffer[bufferIndex++] = webMercatorT;
+            }
         }
 
         if (this.hasVertexNormals) {
@@ -254,6 +270,10 @@ define([
                 vertexStride = 6;
         }
 
+        if (this.hasWebMercatorT) {
+            ++vertexStride;
+        }
+
         if (this.hasVertexNormals) {
             ++vertexStride;
         }
@@ -266,17 +286,29 @@ define([
         textureCoordAndEncodedNormals : 1
     };
     var attributes = {
-        compressed : 0
+        compressed0 : 0,
+        compressed1 : 1
     };
 
     TerrainEncoding.prototype.getAttributes = function(buffer) {
         var datatype = ComponentDatatype.FLOAT;
+        var sizeInBytes = ComponentDatatype.getSizeInBytes(datatype);
+        var stride;
 
         if (this.quantization === TerrainQuantization.NONE) {
-            var sizeInBytes = ComponentDatatype.getSizeInBytes(datatype);
             var position3DAndHeightLength = 4;
-            var numTexCoordComponents = this.hasVertexNormals ? 3 : 2;
-            var stride = (this.hasVertexNormals ? 7 : 6) * sizeInBytes;
+            var numTexCoordComponents = 2;
+
+            if (this.hasWebMercatorT) {
+                ++numTexCoordComponents;
+            }
+
+            if (this.hasVertexNormals) {
+                ++numTexCoordComponents;
+            }
+
+            stride = (position3DAndHeightLength + numTexCoordComponents) * sizeInBytes;
+
             return [{
                 index : attributesNone.position3DAndHeight,
                 vertexBuffer : buffer,
@@ -294,22 +326,47 @@ define([
             }];
         }
 
-        var numComponents = 3;
-        numComponents += this.hasVertexNormals ? 1 : 0;
+        var numCompressed0 = 3;
+        var numCompressed1 = 0;
+
+        if (this.hasWebMercatorT || this.hasVertexNormals) {
+            ++numCompressed0;
+        }
+
+        if (this.hasWebMercatorT && this.hasVertexNormals) {
+            ++numCompressed1;
+
+            stride = (numCompressed0 + numCompressed1) * sizeInBytes;
+
+            return [{
+                index : attributes.compressed0,
+                vertexBuffer : buffer,
+                componentDatatype : datatype,
+                componentsPerAttribute : numCompressed0,
+                offsetInBytes : 0,
+                strideInBytes : stride
+            }, {
+                index : attributes.compressed1,
+                vertexBuffer : buffer,
+                componentDatatype : datatype,
+                componentsPerAttribute : numCompressed1,
+                offsetInBytes : numCompressed0 * sizeInBytes,
+                strideInBytes : stride
+            }];
+        }
         return [{
-            index : attributes.compressed,
+            index : attributes.compressed0,
             vertexBuffer : buffer,
             componentDatatype : datatype,
-            componentsPerAttribute : numComponents
+            componentsPerAttribute : numCompressed0
         }];
     };
 
     TerrainEncoding.prototype.getAttributeLocations = function() {
         if (this.quantization === TerrainQuantization.NONE) {
             return attributesNone;
-        } else {
-            return attributes;
         }
+        return attributes;
     };
 
     TerrainEncoding.clone = function(encoding, result) {
@@ -325,6 +382,7 @@ define([
         result.fromScaledENU = Matrix4.clone(encoding.fromScaledENU);
         result.matrix = Matrix4.clone(encoding.matrix);
         result.hasVertexNormals = encoding.hasVertexNormals;
+        result.hasWebMercatorT = encoding.hasWebMercatorT;
         return result;
     };
 
