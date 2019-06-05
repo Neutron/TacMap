@@ -174,7 +174,7 @@
         });
     });
     app.get('/', function(req, res) {
-        res.sendFile(__dirname + '/index.html');
+        res.sendFile(__dirname + '/public/unit.html');
     });
     
     app.get('/node_modules/*', function(req, res) {
