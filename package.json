@@ -1,6 +1,6 @@
 {
   "name": "tacmap",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Simulation using Cesium JavaScript library to visualize PLI message traffic for moving units on a map.",
   "homepage": "https://github.com/mil-oss/TacMap.git",
   "license": "GPL-3.0",
@@ -13,19 +13,20 @@
     "start": "node tacmap.js --public"
   },
   "devDependencies": {
-    "compression": "^1.7.4",
-    "request": "^2.88.0",
-    "socket.io-client": "^2.2.0"
+    "axios": "^1.7.7",
+    "compression": "1.7.4",
+    "socket.io-client": "4.8.0"
   },
   "dependencies": {
-    "angular": "^1.7.8",
-    "body-parser": "^1.19.0",
-    "cesium": "^1.58.1",
-    "cors": "2.7.x",
-    "eslint": "^5.16.0",
-    "express": "4.16.0",
-    "socket.io": "^2.2.0",
-    "yargs": "4.7.x"
+    "angular": "^1.8.3",
+    "body-parser": "1.20.3",
+    "cesium": "1.121.1",
+    "cors": "2.8.5",
+    "eslint": "9.11.0",
+    "express": "4.21.0",
+    "nvm": "^0.0.4",
+    "socket.io": "4.8.0",
+    "yargs": "17.7.2"
   },
   "author": "James Neushul",
   "bugs": {

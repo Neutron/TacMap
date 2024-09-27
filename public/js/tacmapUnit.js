@@ -21,7 +21,7 @@ var storestructure = [
     ['Resources', 'name', false, [['url', 'url', true], ['lastmod', 'lastmod', false], ['data', 'data', false]]],
     ['Missions', 'name', false, [['data', 'data', false]]]
 ];
-Cesium.BingMapsApi.defaultKey = 'AtO-6nT2HLG-BF4IvAbGvEppiYqeW9W4KSemE-7wVH_9GgWnThseKQdwe4-xj-S0';
+Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI3MTg2YTliMi05YWYzLTQ0MzgtYWRjNS01NjRlOGY4NjgwZGUiLCJpZCI6ODU3Nywic2NvcGVzIjpbImFzciIsImdjIl0sImlhdCI6MTU1MjMyNzk0Mn0.-bqHZmN7eaGyZPP_tSEklGadxL9WTBJLEfiQkd0fFkw';
 var compression = false;
 var viewer = new Cesium.Viewer('cesiumContainer', {
     animation: false,
@@ -31,28 +31,28 @@ var viewer = new Cesium.Viewer('cesiumContainer', {
     baseLayerPicker: true,
     navigationHelpButton: false,
     navigationInstructionsInitiallyVisible: false,
-//    imageryProvider: new Cesium.ArcGisMapServerImageryProvider({
-//        url: 'https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer'
-//    }),
-//    imageryProvider: new Cesium.ArcGisMapServerImageryProvider({
-//        url: '//services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer'
-//    }), 
+    //    imageryProvider: new Cesium.ArcGisMapServerImageryProvider({
+    //        url: 'https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer'
+    //    }),
+    //    imageryProvider: new Cesium.ArcGisMapServerImageryProvider({
+    //        url: '//services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer'
+    //    }), 
     imageryProvider: new Cesium.BingMapsImageryProvider({
-     url: '//dev.virtualearth.net',
-     key: 'AtO-6nT2HLG-BF4IvAbGvEppiYqeW9W4KSemE-7wVH_9GgWnThseKQdwe4-xj-S0',
-     mapStyle: Cesium.BingMapsStyle.AERIAL_WITH_LABELS
-     }),
-/*imageryProvider: new Cesium.GoogleEarthImageryProvider({
-      url: '//earth.localdomain',
-      channel: 1008
-      }),*/
-//    imageryProvider: new Cesium.TileMapServiceImageryProvider({
-//        url: 'Cesium/Assets/Textures/NaturalEarthII'
-//    }),
-// OpenStreetMap tile provider
-//    imageryProvider: new Cesium.OpenStreetMapImageryProvider({
-//        url: '/tiles'
-//    }),
+        url: '//dev.virtualearth.net',
+        key: 'AtO-6nT2HLG-BF4IvAbGvEppiYqeW9W4KSemE-7wVH_9GgWnThseKQdwe4-xj-S0',
+        mapStyle: Cesium.BingMapsStyle.AERIAL_WITH_LABELS
+    }),
+    /*imageryProvider: new Cesium.GoogleEarthImageryProvider({
+          url: '//earth.localdomain',
+          channel: 1008
+          }),*/
+    //    imageryProvider: new Cesium.TileMapServiceImageryProvider({
+    //        url: 'Cesium/Assets/Textures/NaturalEarthII'
+    //    }),
+    // OpenStreetMap tile provider
+    //    imageryProvider: new Cesium.OpenStreetMapImageryProvider({
+    //        url: '/tiles'
+    //    }),
     homeButton: false,
     geocoder: false
 });

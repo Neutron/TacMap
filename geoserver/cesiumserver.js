@@ -5,7 +5,7 @@
 
     var express = require('express');
     var url = require('url');
-    var request = require('request');
+    var request = require('axios');
     var mime = express.static.mime;
     mime.define({
         'application/json': ['czml', 'json', 'geojson', 'topojson', 'gltf'],
@@ -18,9 +18,9 @@
             if (!/^https?:\/\//.test(remoteUrl)) {
                 remoteUrl = 'http://' + remoteUrl;
             }
-            remoteUrl = url.parse(remoteUrl);
+            remoteUrl = new URL(remoteUrl);
             // copy query string
-            remoteUrl.search = url.parse(req.url).search;
+            remoteUrl.search = new URL(req.url).search;
         }
         return remoteUrl;
     }
@@ -49,7 +49,7 @@
             // look for request like http://localhost:8080/proxy/?http%3A%2F%2Fexample.com%2Ffile%3Fquery%3D1
             remoteUrl = Object.keys(req.query)[0];
             if (remoteUrl) {
-                remoteUrl = url.parse(remoteUrl);
+                remoteUrl = new URL(remoteUrl);
             }
         }
 

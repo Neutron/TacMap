@@ -87,7 +87,7 @@ TacMapServer.factory('GeoService', function () {
         }
     };
     geosvc.addStoredWaypoints = function (entity) {
-        //console.log("addStoredWaypoints: " + entity._id);
+        // console.log("addStoredWaypoints: " + entity._id);
         var w = entity.waypoints;
         var uid = entity._id;
         geosvc.waypoints[uid] = [];
@@ -213,12 +213,14 @@ TacMapServer.factory('GeoService', function () {
         }
     };
     geosvc.hideAllWP = function () {
+        console.log("hideAllWP .. " + geosvc.missionid)
         var wpent = geosvc.wpdatasources[geosvc.missionid].entities.values;
         for (p = 0; p < wpent.length; p++) {
             geosvc.wpdatasources[geosvc.missionid].entities.getById(wpent[p].id).show = false;
         }
     };
     geosvc.showAllWP = function () {
+        console.log("showAllWP .. " + geosvc.missionid)
         var wpent = geosvc.wpdatasources[geosvc.missionid].entities.values;
         for (p = 0; p < wpent.length; p++) {
             geosvc.wpdatasources[geosvc.missionid].entities.getById(wpent[p].id).show = true;
@@ -270,15 +272,14 @@ TacMapServer.factory('MsgService', function () {
             missionid: name, missiondata: missiondata
         });
     };
-    msgsvc.sendMessage = function (msg, net) {
+    msgsvc.sendMessage = function (msg) {
         var message = msg;
-        console.log("sendMessage to " + net);
-        //console.log("sendMessage from "+message.unit+" to "+message.to+" at "+message.time+" posrep: "+message.position[0]+", "+message.position[1]);
         // if there is a non-empty message and a socket connection
         if (message && msgsvc.connected) {
+            console.log("sendMessage from " + message.unit + " at " + message.time + " posrep: " + message.position[0] + ", " + message.position[1]);
             // tell server to execute 'new message' and send along one parameter
             msgsvc.socket.emit('send msg', {
-                net: net, message: message
+                message: message
             });
         }
     };

@@ -1,22 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Mission name="Default Mission">
+<Mission name="Default">
     <Polygons>
-        <Polygon id="Default" name="Bydgoszcz" color="BLACK"
-            locations="52.9974565821361,17.8404060428482, 
+        <Polygon id="Default" name="Bydgoszcz" color="BLACK" locations="52.9974565821361,17.8404060428482, 
             53.24950421786391,17.8404060428482, 
             53.24950421786391,18.1764695571518, 
             52.9974565821361,18.1764695571518,
             52.9974565821361,17.8404060428482"/>
-        <Polygon id="CanACoAO" name="CAN A CO AO" color="BLUE"
-            locations="53.08595123293665,18.0071422272312,
+        <Polygon id="CanACoAO" name="CAN A CO AO" color="BLUE" locations="53.08595123293665,18.0071422272312,
             53.10826016607894,18.00835425802229,
             53.10848941711222,17.99296104873016,
             53.11098403759814,17.97943920954539,
             53.11222988599757,17.95140338028827,
             53.09178339219432,17.94738034226369,
             53.08595123293665,18.0071422272312"/>
-        <Polygon id="NldDCoAO" name="NLD D CO AO" color="ORANGE"
-            locations="53.11789884266493,17.95156726642816,
+        <Polygon id="NldDCoAO" name="NLD D CO AO" color="ORANGE" locations="53.11789884266493,17.95156726642816,
             53.11873432669751,17.94170268262486,
             53.12068503462501,17.94020600435845,
             53.12436490917027,17.90372552661295,
@@ -26,36 +23,22 @@
             53.08847229347532,17.90284983086235,
             53.09137296873295,17.91030099436572,
             53.09489703236727,17.94685111086739,
-            53.11789884266493,17.95156726642816"
-        />
+            53.11789884266493,17.95156726642816" />
     </Polygons>
     <Entities>
-        <Entity id="NatoHq" name="NATO HQ" icon="img/10131000151211950000.png"
-            location="53.1207350007867,17.97967700009256" network="NATO" report_to="NatoHq"/>
-        <Entity id="MeuArg" name="MEU ARG" icon="img/10133000001100000002.png"
-            location="55.26759100163176,17.97967700009256" network="USA" report_to="MeuArg"/>
-        <Entity id="Osprey1" name="Rescue 1" icon="img/10130100001102000802.png"
-            location="55.26759100163176,17.97967700009256" network="USA" report_to="MeuArg"/>
-        <Entity id="Osprey2" name="Rescue 2" icon="img/10130100001102000802.png"
-            location="55.26759100163176,17.97967700009256" network="USA" report_to="MeuArg"/>
-        <Entity id="Pilot" name="HVI" icon="img/10131000001900000000.png"
-            location="53.11475848802692,17.91911251207788" network="USA" report_to="MeuArg"/>
-        <Entity id="CanACoHq" name="CAN A CO HQ" icon="img/10131000151211950000.png"
-            location="53.09437284078162,17.99854506993847" network="CAN" report_to="NatoHq"/>
-        <Entity id="CanA-1-1" name="CAN A 1PLT 1SQ" icon="img/10131000121211000000.png"
-            location="53.10041455085371,17.95499655870869" network="CAN" report_to="CanACoHq"/>
-        <Entity id="CanA-1-2" name="CAN A 1PLT 2SQ" icon="img/10131000121211040000.png"
-            location="53.10800188773993,18.00820347796147" network="CAN" report_to="CanACoHq"/>
-        <Entity id="CanA-Op" name="CAN A CO OP" icon="img/10131000101212000000.png"
-            location="53.1094113685998,17.95272375646002" network="CAN" report_to="CanACoHq"/>
-        <Entity id="NldDCoHq" name="NLD D CO HQ" icon="img/10131000151211950000.png"
-            location="53.09627599941032,17.92301299801406" network="NLD" report_to="NatoHq"/>
-        <Entity id="NldD-1-1" name="NLD D 1PLT 1SQ" icon="img/10131000121211040000.png"
-            location="53.10797545110159,17.9446363332549" network="NLD" report_to="NldDCoHq"/>
-        <Entity id="NldD-1-2" name="NLD D 1PLT 2SQ" icon="img/10131000121211000000.png"
-            location="53.123514220917,17.89819303492627" network="NLD" report_to="NldDCoHq"/>
-        <Entity id="NldD-Op" name="NLD D CO OP" icon="img/10131000101212000000.png"
-            location="53.10838540752472,17.9233507759995" network="NLD" report_to="NldDCoHq"/>
+        <Entity id="NatoHq" name="NATO HQ" icon="img/10131000151211950000.png" location="53.1207350007867,17.97967700009256" network="NATO" report_to="NatoHq"/>
+        <Entity id="MeuArg" name="MEU ARG" icon="img/10133000001100000002.png" location="55.26759100163176,17.97967700009256" network="USA" report_to="MeuArg"/>
+        <Entity id="Osprey1" name="Rescue 1" icon="img/10130100001102000802.png" location="55.26759100163176,17.97967700009256" network="USA" report_to="MeuArg"/>
+        <Entity id="Osprey2" name="Rescue 2" icon="img/10130100001102000802.png" location="55.26759100163176,17.97967700009256" network="USA" report_to="MeuArg"/>
+        <Entity id="Pilot" name="HVI" icon="img/10131000001900000000.png" location="53.11475848802692,17.91911251207788" network="USA" report_to="MeuArg"/>
+        <Entity id="CanACoHq" name="CAN A CO HQ" icon="img/10131000151211950000.png" location="53.09437284078162,17.99854506993847" network="CAN" report_to="NatoHq"/>
+        <Entity id="CanA-1-1" name="CAN A 1PLT 1SQ" icon="img/10131000121211000000.png" location="53.10041455085371,17.95499655870869" network="CAN" report_to="CanACoHq"/>
+        <Entity id="CanA-1-2" name="CAN A 1PLT 2SQ" icon="img/10131000121211040000.png" location="53.10800188773993,18.00820347796147" network="CAN" report_to="CanACoHq"/>
+        <Entity id="CanA-Op" name="CAN A CO OP" icon="img/10131000101212000000.png" location="53.1094113685998,17.95272375646002" network="CAN" report_to="CanACoHq"/>
+        <Entity id="NldDCoHq" name="NLD D CO HQ" icon="img/10131000151211950000.png" location="53.09627599941032,17.92301299801406" network="NLD" report_to="NatoHq"/>
+        <Entity id="NldD-1-1" name="NLD D 1PLT 1SQ" icon="img/10131000121211040000.png" location="53.10797545110159,17.9446363332549" network="NLD" report_to="NldDCoHq"/>
+        <Entity id="NldD-1-2" name="NLD D 1PLT 2SQ" icon="img/10131000121211000000.png" location="53.123514220917,17.89819303492627" network="NLD" report_to="NldDCoHq"/>
+        <Entity id="NldD-Op" name="NLD D CO OP" icon="img/10131000101212000000.png" location="53.10838540752472,17.9233507759995" network="NLD" report_to="NldDCoHq"/>
     </Entities>
     <Speeds>
         <Speed type="Dismount" value="1" units="m/s"/>

@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Mission name="CAMPEN Mission">
+<Mission name="CAMPEN">
     <Polygons>
-        <Polygon id="Default" name="CAMPEN" color="BLACK"
-            locations="33.18001084277221,-117.4229846837251,
+        <Polygon id="Default" name="CAMPEN" color="BLACK" locations="33.18001084277221,-117.4229846837251,
             33.42327132704204,-117.1024629654342,
             33.65758088052254,-117.3890854539534,
             33.37150444151094,-117.6408946837948,

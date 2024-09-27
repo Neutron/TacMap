@@ -23,8 +23,8 @@ TacMapServer.controller('storeCtl', function ($indexedDB, $scope, $http, GeoServ
     stctl.missionlist = [];
     stctl.waypoints = [];
     stctl.loc = [];
-    stctl.showWP = true;
-    $scope.selmission = {id: 0, name: 'Default Mission'};
+    stctl.showWP = 0;
+    $scope.selmission = { id: 0, name: 'Default' };
     $scope.netselected = [];
     stctl.speedsel = [];
     //
@@ -39,7 +39,7 @@ TacMapServer.controller('storeCtl', function ($indexedDB, $scope, $http, GeoServ
             $scope.$apply();
         }
     },
-            Cesium.ScreenSpaceEventType.LEFT_CLICK);
+        Cesium.ScreenSpaceEventType.LEFT_CLICK);
     stctl.rtClickHandler = new Cesium.ScreenSpaceEventHandler(scene.canvas);
     stctl.rtClickHandler.setInputAction(function (mouse) {
         //console.log("edit: " + stctl.editchecked);
@@ -55,10 +55,10 @@ TacMapServer.controller('storeCtl', function ($indexedDB, $scope, $http, GeoServ
             stctl.setLocation(stctl.unitselected, Cesium.Math.toDegrees(cartographic.latitude), Cesium.Math.toDegrees(cartographic.longitude));
         }
     },
-            Cesium.ScreenSpaceEventType.RIGHT_CLICK);
+        Cesium.ScreenSpaceEventType.RIGHT_CLICK);
 
     stctl.selectUnit = function (u, zoomto) {
-        //console.log($scope.selmission.name);
+        //console.log($scope.selmission.id);
         //console.log(GeoService.sdatasources[$scope.selmission.name]);
         stctl.unitselected = GeoService.sdatasources[$scope.selmission.name].entities.getById(u._id);
         stctl.unitselectedid = stctl.unitselected._id;
@@ -132,8 +132,7 @@ TacMapServer.controller('storeCtl', function ($indexedDB, $scope, $http, GeoServ
         }
     };
     stctl.removeAllWp = function () {
-        if (GeoService.waypoints[stctl.unitselected._id])
-        {
+        if (GeoService.waypoints[stctl.unitselected._id]) {
             stctl.waypoints[stctl.unitselected._id] = GeoService.waypoints[stctl.unitselected._id];
         }
         if (stctl.waypoints[stctl.unitselected._id]) {
@@ -164,7 +163,7 @@ TacMapServer.controller('storeCtl', function ($indexedDB, $scope, $http, GeoServ
                         console.log("Save " + overwrite);
                         stctl.overwriteMission(overwrite);
                         stctl.currmission = currentmission;
-                        stctl.loadMission({id: overwriteid, name: overwrite});
+                        stctl.loadMission({ id: overwriteid, name: overwrite });
                     }
                 });
             } else {
@@ -196,15 +195,6 @@ TacMapServer.controller('storeCtl', function ($indexedDB, $scope, $http, GeoServ
         });
         $scope.selmission = nextmission;
     };
-    stctl.hideWaypoints = function () {
-        stctl.showWP = false;
-        GeoService.hideAllWP();
-    };
-    stctl.showWaypoints = function () {
-        console.log("showWaypoints");
-        stctl.showWP = true;
-        GeoService.showAllWP();
-    };
     //
     stctl.clearDb = function () {
         console.log("Clear DB");
@@ -222,7 +212,7 @@ TacMapServer.controller('storeCtl', function ($indexedDB, $scope, $http, GeoServ
     stctl.exportMission = function () {
         console.log("exportMission");
         DlgBx.prompt("Enter Export Save As Name:", $scope.selmission.name).then(function (newname) {
-            if (newname === 'Default Mission') {
+            if (newname === 'Default') {
                 DlgBx.alert("You Can't' Overwrite the Default Mission");
             } else {
                 var overwrite = null;
@@ -250,21 +240,21 @@ TacMapServer.controller('storeCtl', function ($indexedDB, $scope, $http, GeoServ
                         store.find($scope.selmission.name).then(function (scen) {
                             var mission = scen.data;
                             $http.post("/json/" + newname.replace(' ', '') + '.json', mission)
-                                    .success(function () {
-                                        console.log("Saved " + newname + " to /json/" + newname.replace(' ', '') + ".json");
-                                        stctl.missionlist.push({
-                                            id: stctl.missionlist.length - 1, name: newname.replace(' ', '') + ".json", url: "/json/" + newname.replace(' ', '') + ".json"
-                                        });
-                                        dB.openStore('Resources', function (store) {
-                                            store.upsert({
-                                                name: "missions.json", url: "/json/missions.json", data: stctl.missionlist
-                                            }).then(function () {
-                                                store.find("missions.json").then(function (st) {
-                                                    $http.put('/json/missions.json', st.data);
-                                                });
+                                .success(function () {
+                                    console.log("Saved " + newname + " to /json/" + newname.replace(' ', '') + ".json");
+                                    stctl.missionlist.push({
+                                        id: stctl.missionlist.length - 1, name: newname.replace(' ', '') + ".json", url: "/json/" + newname.replace(' ', '') + ".json"
+                                    });
+                                    dB.openStore('Resources', function (store) {
+                                        store.upsert({
+                                            name: "missions.json", url: "/json/missions.json", data: stctl.missionlist
+                                        }).then(function () {
+                                            store.find("missions.json").then(function (st) {
+                                                $http.put('/json/missions.json', st.data);
                                             });
                                         });
                                     });
+                                });
                         });
                     });
                 }
@@ -279,11 +269,10 @@ TacMapServer.controller('storeCtl', function ($indexedDB, $scope, $http, GeoServ
         console.log("Get File: " + savedmission.name + ", " + savedmission.url);
         $http.get(savedmission.url).success(function (sdata) {
             DlgBx.prompt("Enter Save As Name or Overwrite", savedmission.mission).then(function (newname) {
-                if (newname === "Default Mission") {
+                if (newname === "Default") {
                     DlgBx.alert("You Can't' Overwrite the Default Mission");
                 } else {
                     var overwrite = null;
-                    var overwriteid = null;
                     for (i = 0; i < stctl.missionlist.length; i++) {
                         if (newname === stctl.missionlist[i].value) {
                             overwrite = stctl.missionlist[i].value;
@@ -304,11 +293,11 @@ TacMapServer.controller('storeCtl', function ($indexedDB, $scope, $http, GeoServ
                         console.log("Save " + newname);
                         stctl.mission = sdata;
                         dB.openStore("Missions", function (store) {
-                            store.insert({name: newname, data: sdata}).then(function () {
+                            store.insert({ name: newname, data: sdata }).then(function () {
                                 stctl.missionlist.push({
                                     id: stctl.missionlist.length - 1, name: newname
                                 });
-                                stctl.currmission = {id: stctl.missionlist.length - 1, name: newname};
+                                stctl.currmission = { id: stctl.missionlist.length - 1, name: newname };
                                 stctl.loadMission(savedmission);
                             });
                         });
@@ -328,19 +317,19 @@ TacMapServer.controller('storeCtl', function ($indexedDB, $scope, $http, GeoServ
                     }
                 }
             }).then(function () {
-                store.upsert({name: $scope.selmission.name, data: stctl.mission});
+                store.upsert({ name: $scope.selmission.name, data: stctl.mission });
             });
         });
     };
     stctl.updateMission = function () {
         dB.openStore("Missions", function (store) {
-            store.upsert({name: $scope.selmission.name, data: stctl.mission});
+            store.upsert({ name: $scope.selmission.name, data: stctl.mission });
         });
     };
     stctl.copyMission = function (currentmission, newmissionid) {
         dB.openStore("Missions", function (store) {
             store.find(currentmission).then(function (mission) {
-                store.insert({name: newmissionid, data: mission.data});
+                store.insert({ name: newmissionid, data: mission.data });
             });
         });
     };
@@ -349,7 +338,7 @@ TacMapServer.controller('storeCtl', function ($indexedDB, $scope, $http, GeoServ
         dB.openStore("Missions", function (store) {
             store.find(missionid).then(function () {
                 store["delete"](missionid).then(function () {
-                    store.insert({name: missionid, data: stctl.mission});
+                    store.insert({ name: missionid, data: stctl.mission });
                 });
             });
         });
@@ -363,7 +352,7 @@ TacMapServer.controller('storeCtl', function ($indexedDB, $scope, $http, GeoServ
                 if (yes && $scope.selmission.id !== 0) {
                     console.log("Delete from Idb: " + currentmission.value);
                     dB.openStore("Missions", function (store) {
-                        store[ "delete"](currentmission.value);
+                        store["delete"](currentmission.value);
                     });
                     var na = [];
                     for (i = 0; i < stctl.missionlist.length; i++) {
@@ -382,35 +371,36 @@ TacMapServer.controller('storeCtl', function ($indexedDB, $scope, $http, GeoServ
     //
     stctl.addFile = function (mission, filename, data) {
         $http.post("/json/" + filename, data)
-                .success(function () {
-                    console.log("Saved " + mission + " to /json/" + filename + ".json");
-                    stctl.missionlist.push({
-                        id: stctl.missionlist.length - 1, name: filename, url: "/json/" + filename
-                    });
-                    dB.openStore('Resources', function (store) {
-                        store.upsert({
-                            name: "missions.json", url: resources[1], data: stctl.missionlist
-                        }).then(function () {
-                            $http.post("/json/missions.json", stctl.missionlist).success(
-                                    function () {
-                                        console.log("Updated File List");
-                                    });
-                        });
+            .success(function () {
+                console.log("Saved " + mission + " to /json/" + filename + ".json");
+                stctl.missionlist.push({
+                    id: stctl.missionlist.length - 1, name: filename, url: "/json/" + filename
+                });
+                dB.openStore('Resources', function (store) {
+                    store.upsert({
+                        name: "missions.json", url: resources[1], data: stctl.missionlist
+                    }).then(function () {
+                        $http.post("/json/missions.json", stctl.missionlist).success(
+                            function () {
+                                console.log("Updated File List");
+                            });
                     });
                 });
+            });
     };
     stctl.overwriteFile = function (mission, filename, data) {
         $http.post("/json/" + filename, data)
-                .success(function () {
-                    console.log("Saved " + mission + " to /json/" + filename + ".json");
-                });
+            .success(function () {
+                console.log("Saved " + mission + " to /json/" + filename + ".json");
+            });
     };
     //
     stctl.toggleWaypoints = function () {
+        console.log(stctl.showWP);
         if (stctl.showWP) {
-            stctl.showWaypoints();
+            GeoService.showAllWP();
         } else {
-            stctl.hideWaypoints();
+            GeoService.hideAllWP();
         }
     };
     stctl.showUnit = function (unit) {
@@ -462,39 +452,41 @@ TacMapServer.controller('storeCtl', function ($indexedDB, $scope, $http, GeoServ
             var jdata = stctl.xj.xml_str2json(result.data);
             var mname = jdata.Mission._name;
             var jname = mname.replace(' ', '').toLowerCase();
-            stctl.missionlist.push({id: msnid, name: mname, url: 'json/' + jname + '.json'});
+            stctl.missionlist.push({ id: msnid, name: mname, url: 'json/' + jname + '.json' });
             $http.post("/json/missions.json", angular.toJson(stctl.sortByKey(stctl.missionlist, 'id')));
             if (filename === 'DefaultMission.xml') {
                 $http.get('/json/defaultmission.json').then(function (result) {
-                    var jdata=result.data;
+                    var jdata = result.data;
                     dB.openStore('Missions', function (mstore) {
-                        mstore.upsert({name: mname, url: 'json/' + jname + '.json', data: jdata}).then(function () {
-                                console.log('init geo');
-                                stctl.mission = jdata;
-                                stctl.networks = jdata.Mission.Networks.Network;
-                                stctl.speeds = jdata.Mission.Speeds.Speed;
-                                stctl.speedsel = stctl.speeds[0];
-                                stctl.entities = jdata.Mission.Entities.Entity;
-                                GeoService.initGeodesy(jdata.Mission._name, jdata);
-                                $scope.selmission.name = jdata.Mission._name;
+                        mstore.upsert({ name: mname, url: 'json/' + jname + '.json', data: jdata }).then(function () {
+                            console.log('init geo');
+                            stctl.mission = jdata;
+                            stctl.networks = jdata.Mission.Networks.Network;
+                            stctl.speeds = jdata.Mission.Speeds.Speed;
+                            stctl.speedsel = stctl.speeds[0];
+                            stctl.entities = jdata.Mission.Entities.Entity;
+                            GeoService.initGeodesy(jdata.Mission._name, jdata);
+                            $scope.selmission.name = jdata.Mission._name;
+                            stctl.loadMission({ id: 0, name: "Default" });
                         });
                     });
                 });
             } else {
                 dB.openStore('Missions', function (mstore) {
-                    mstore.upsert({name: mname, url: 'json/' + jname + '.json', data: jdata}).then(function () {
+                    mstore.upsert({ name: mname, url: 'json/' + jname + '.json', data: jdata }).then(function () {
                         dB.openStore('Resources', function (store) {
                             store.getAllKeys().then(function (keys) {
                                 if (keys.indexOf(filename) === -1) {
-                                    store.upsert({name: filename, url: url, lastmod: mod, data: jdata});
+                                    store.upsert({ name: filename, url: url, lastmod: mod, data: jdata });
                                 } else {
                                     store.find(filename).then(function (dbrec) {
                                         if (dbrec.lastmod !== mod) {
                                             console.log('upsert ' + filename);
-                                            store.upsert({name: filename, url: url, lastmod: mod, data: jdata});
+                                            store.upsert({ name: filename, url: url, lastmod: mod, data: jdata });
                                         }
                                     });
                                 }
+                                stctl.loadMission({ id: 0, name: "Default" });
                             });
                         });
                     });
@@ -521,15 +513,14 @@ TacMapServer.controller('storeCtl', function ($indexedDB, $scope, $http, GeoServ
             for (i = 0; i < msns.Missions.Mission.length; i++) {
                 var u = msns.Missions.Mission[i]._url;
                 var n = msns.Missions.Mission[i]._name;
-                console.log(n);
                 if (u.substring(u.indexOf('.')) === '.xml') {
                     stctl.syncResource(msns.Missions.Mission[i]._id, $http, msns.Missions.Mission[i]._url, dB, stctl, GeoService);
                 } else {
-                    stctl.missionlist.push({id: msns.Missions.Mission[i]._id, name: n, url: u});
+                    stctl.missionlist.push({ id: msns.Missions.Mission[i]._id, name: n, url: u });
                     $http.get(u).success(function (jsondata, status, headers) {
                         dB.openStore('Missions', function (mstore) {
                             console.log(n);
-                            mstore.upsert({name: n, url: u, data: jsondata});
+                            mstore.upsert({ name: n, url: u, data: jsondata });
                             $http.post("/json/missions.json", angular.toJson(stctl.sortByKey(stctl.missionlist, 'id')));
                         });
                     });
@@ -555,7 +546,7 @@ TacMapServer.controller('messageCtl', function ($indexedDB, $scope, $interval, G
         msgctl.time = 0;
         msgctl.running = false;
         MsgService.socket.emit("mission stopped");
-        MsgService.socket.emit("mission time", {time: msgctl.time});
+        MsgService.socket.emit("mission time", { time: msgctl.time });
         $interval.cancel(msgctl.playMission);
         for (m = 0; m < msgctl.units.length; m++) {
             var mv = GeoService.movementsegments[msgctl.units[m]][0];
@@ -588,16 +579,18 @@ TacMapServer.controller('messageCtl', function ($indexedDB, $scope, $interval, G
         for (m = 0; m < msgctl.units.length; m++) {
             var mv = GeoService.movementsegments[msgctl.units[m]][msgctl.movecount];
             if (mv) {
-                var unit = GeoService.entities[msgctl.units[m]];
-                unit._location = mv.lat + "," + mv.lon;
+                var unitid = msgctl.units[m];
+                var unit = GeoService.sdatasources[$scope.selmission.name].entities.getById(unitid)
+                //console.log(unit);
+                unit_location = mv.lat + "," + mv.lon;
                 unit._rpttime = new Date().getTime();
-                GeoService.sdatasources[$scope.selmission.name].entities.getById(unit._id).position = Cesium.Cartesian3.fromDegrees(mv.lon, mv.lat);
-                msgctl.sendReport({unit: unit._id, to: unit._report_to, time: unit._rpttime, position: [mv.lat, mv.lon], network: unit._network});
+                unit.position = Cesium.Cartesian3.fromDegrees(mv.lon, mv.lat);
+                msgctl.sendReport({ unit: unit._id, time: unit._rpttime, position: [mv.lat, mv.lon] });
             }
         }
         msgctl.movecount++;
         msgctl.time = (msgctl.movecount * msgctl.interval) / 1000;
-        MsgService.socket.emit("mission time", {time: msgctl.time});
+        MsgService.socket.emit("mission time", { time: msgctl.time });
     };
     msgctl.sendReport = function (msgobj) {
         //default ui
@@ -606,38 +599,39 @@ TacMapServer.controller('messageCtl', function ($indexedDB, $scope, $interval, G
     msgctl.moveUnit = function (uid, sentto, net, lat, lon) {
         console.log("moveUnit: " + uid);
         GeoService.sdatasources[$scope.selmission.name].entities.getById(uid).position = Cesium.Cartesian3.fromDegrees(lon, lat);
-        msgctl.sendReport({unit: uid, to: sentto, time: new Date(), position: [lat, lon], network: net});
+        msgctl.sendReport({ unit: uid, to: sentto, time: new Date(), position: [lat, lon], network: net });
     };
     MsgService.socket.on('error', console.error.bind(console));
     MsgService.socket.on('message', console.log.bind(console));
     MsgService.socket.on('msg sent', function (data) {
-        msgctl.messages.push({text: "POSREP " + data.net + " " + data.message.unit});
+        msgctl.messages.push({ text: "POSREP " + data.net + " " + data.message.unit });
         GeoService.sdatasources[$scope.selmission.name].entities.getById(data.message.unit).position = Cesium.Cartesian3.fromDegrees(data.message.position[1], data.message.position[0]);
     });
     MsgService.socket.on('unit disconnected', function (data) {
         console.log("Unit disconnected " + data.socketid);
-        msgctl.messages.push({text: "Unit " + data.socketid + " disconnected"});
+        msgctl.messages.push({ text: "Unit " + data.socketid + " disconnected" });
     });
     MsgService.socket.on('unit joined', function (data) {
         //console.log('Unit ' + data.unitid + ' Joined Network: ' + data.netname);
-        msgctl.messages.push({text: 'Unit ' + data.unitid + ' Joined Network: ' + data.netname});
+        msgctl.messages.push({ text: 'Unit ' + data.unitid + ' Joined Network: ' + data.netname });
     });
     MsgService.socket.on('unit left', function (data) {
         console.log('Unit ' + data.unitid + ' Left Network: ' + data.netname);
-        msgctl.messages.push({text: 'Unit ' + data.unitid + ' Left Network: ' + data.netname});
+        msgctl.messages.push({ text: 'Unit ' + data.unitid + ' Left Network: ' + data.netname });
     });
     MsgService.socket.on('server joined', function (data) {
         //console.log('Joined Network: ' + data.netname);
-        msgctl.messages.push({text: 'Joined Network: ' + data.netname});
+        msgctl.messages.push({ text: 'Joined Network: ' + data.netname });
     });
     MsgService.socket.on('server left', function (data) {
         //console.log('Left Network: ' + data.netname);
-        msgctl.messages.push({text: 'Left Network: ' + data.netname});
+        msgctl.messages.push({ text: 'Left Network: ' + data.netname });
     });
-    MsgService.socket.on("start mission", function () {
-        msgctl.running = true;
-        $scope.$apply();
-    });
+    /*  MsgService.socket.on("start mission", function () {
+         console.log("start mission");
+         msgctl.running = true;
+         $scope.$apply();
+     }); */
     MsgService.socket.on("stop mission", function () {
         msgctl.running = false;
         $scope.$apply();

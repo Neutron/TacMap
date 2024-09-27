@@ -10,7 +10,7 @@ TacMapUnit.controller('viewCtl', function ($indexedDB, $scope, $http, GeoUnitSer
     vwctl.networks = [];
     vwctl.loc = [];
     $scope.netselected = [];
-    $scope.selmission = {id: 0, name: 'Default Mission'};
+    $scope.selmission = { id: 0, name: 'Default Mission' };
     vwctl.missionid = GeoUnitService.missionid;
     //
     vwctl.lftClickHandler = new Cesium.ScreenSpaceEventHandler(scene.canvas);
@@ -24,7 +24,7 @@ TacMapUnit.controller('viewCtl', function ($indexedDB, $scope, $http, GeoUnitSer
             $scope.$apply();
         }
     },
-            Cesium.ScreenSpaceEventType.LEFT_CLICK);
+        Cesium.ScreenSpaceEventType.LEFT_CLICK);
     //
     vwctl.selectUnit = function (u, zoomto) {
         //console.log(u._id);
@@ -87,7 +87,7 @@ TacMapUnit.controller('viewCtl', function ($indexedDB, $scope, $http, GeoUnitSer
         $scope.netselected = [];
         viewer.dataSources.remove(GeoUnitService.sdatasources[$scope.selmission.value]);
         dB.openStore("Missions", function (store) {
-            store.upsert({name: data.missionid, data: data.missiondata});
+            store.upsert({ name: data.missionid, data: data.missiondata });
         }).then(function () {
             $scope.selmission.value = data.missionid;
             vwctl.entities = data.missiondata.Mission.Entities.Entity;
@@ -106,37 +106,37 @@ TacMapUnit.controller('UnitMesssageCtl', function ($indexedDB, $scope, MsgUnitSe
         GeoUnitService.sdatasources[$scope.selmission.value].entities.getById(uid).position = Cesium.Cartesian3.fromDegrees(lon, lat);
     };
     MsgUnitService.socket.on('error', console.error.bind(console));
-//    MsgUnitService.socket.on('message', console.log.bind(console));
+    //    MsgUnitService.socket.on('message', console.log.bind(console));
     MsgUnitService.socket.on('connection', function (data) {
         console.log("Unit Connected " + data.socketid);
         MsgUnitService.unitid = data.socketid;
-        MsgUnitService.socket.emit('unit connected', {message: 'unit', id: data.socketid});
-        msgctl.messages.push({text: "Unit Connected"});
+        MsgUnitService.socket.emit('unit connected', { message: 'unit', id: data.socketid });
+        msgctl.messages.push({ text: "Unit Connected" });
     });
-    MsgUnitService.socket.on('msg sent', function (data) {
-        //console.log("receive msg " + data.net + ": " + data.message.unit + " " + data.message.position[0] + ", " + data.message.position[1]);
-        msgctl.messages.push({text: "POSREP " + data.net + " " + data.message.unit});
+    MsgUnitService.socket.on('send msg', function (data) {
+        console.log("receive msg " + data.net + ": " + data.message.unit + " " + data.message.position[0] + ", " + data.message.position[1]);
+        msgctl.messages.push({ text: "POSREP " + data.net + " " + data.message.unit });
         msgctl.moveUnit(data.message.unit, data.message.position[0], data.message.position[1]);
     });
     MsgUnitService.socket.on('unit disconnected', function (data) {
         console.log("Unit disconnected " + data.socketid);
-        msgctl.messages.push({text: "Unit disconnected"});
+        msgctl.messages.push({ text: "Unit disconnected" });
     });
     MsgUnitService.socket.on('unit joined', function (data) {
         //console.log('Joined Network: ' + data.netname);
-        msgctl.messages.push({text: 'Joined Network: ' + data.netname});
+        msgctl.messages.push({ text: 'Joined Network: ' + data.netname });
     });
     MsgUnitService.socket.on('unit left', function (data) {
         console.log('Left Network: ' + data.netname);
-        msgctl.messages.push({text: 'Left Network: ' + data.netname});
+        msgctl.messages.push({ text: 'Left Network: ' + data.netname });
     });
     MsgUnitService.socket.on('server joined', function (data) {
         //console.log('Server ' + data.serverid + ' Joined Net: ' + data.netname);
-        msgctl.messages.push({text: 'Server ' + data.serverid + ' Joined Net: ' + data.netname});
+        msgctl.messages.push({ text: 'Server ' + data.serverid + ' Joined Net: ' + data.netname });
     });
     MsgUnitService.socket.on('server left', function (data) {
         console.log('Server ' + data.serverid + ' Left Net: ' + data.netname);
-        msgctl.messages.push({text: 'Server ' + data.serverid + ' Left Net: ' + data.netname});
+        msgctl.messages.push({ text: 'Server ' + data.serverid + ' Left Net: ' + data.netname });
     });
     MsgUnitService.socket.on('move unit', function (data) {
         msgctl.moveUnit(data.uid, data.lat, data.lon);

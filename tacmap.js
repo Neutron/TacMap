@@ -14,12 +14,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-(function() {
+(function () {
     "use strict";
     var express = require('express');
     var compression = require('compression');
     var url = require('url');
-    var request = require('request');
+    var request = require('axios');
     var bodyParser = require('body-parser');
     var fs = require('fs');
     var cesium = require('./geoserver/cesiumserver');
@@ -69,9 +69,9 @@
             if (!/^https?:\/\//.test(remoteUrl)) {
                 remoteUrl = 'http://' + remoteUrl;
             }
-            remoteUrl = url.parse(remoteUrl);
+            remoteUrl = new URL(remoteUrl);
             // copy query string
-            remoteUrl.search = url.parse(req.url).search;
+            remoteUrl.search = new URL(req.url).search;
         }
         return remoteUrl;
     }
@@ -81,7 +81,7 @@
     function filterHeaders(req, headers) {
         var result = {};
         // filter out headers that are listed in the regex above
-        Object.keys(headers).forEach(function(name) {
+        Object.keys(headers).forEach(function (name) {
             if (!dontProxyHeaderRegex.test(name)) {
                 result[name] = headers[name];
             }
@@ -92,18 +92,18 @@
     var upstreamProxy = argv['upstream-proxy'];
     var bypassUpstreamProxyHosts = {};
     if (argv['bypass-upstream-proxy-hosts']) {
-        argv['bypass-upstream-proxy-hosts'].split(',').forEach(function(host) {
+        argv['bypass-upstream-proxy-hosts'].split(',').forEach(function (host) {
             bypassUpstreamProxyHosts[host.toLowerCase()] = true;
         });
     }
-    app.get('/proxy/*', function(req, res, next) {
+    app.get('/proxy/*', function (req, res, next) {
         // look for request like http://localhost:8080/proxy/http://example.com/file?query=1
         var remoteUrl = getRemoteUrlFromParam(req);
         if (!remoteUrl) {
             // look for request like http://localhost:8080/proxy/?http%3A%2F%2Fexample.com%2Ffile%3Fquery%3D1
             remoteUrl = Object.keys(req.query)[0];
             if (remoteUrl) {
-                remoteUrl = url.parse(remoteUrl);
+                remoteUrl = new URL(remoteUrl);
             }
         }
 
@@ -127,7 +127,7 @@
             headers: filterHeaders(req, req.headers),
             encoding: null,
             proxy: proxy
-        }, function(error, response, body) {
+        }, function (error, response, body) {
             var code = 500;
             if (response) {
                 code = response.statusCode;
@@ -138,7 +138,7 @@
         });
     });
     var server_ip_address = '127.0.0.1';
-    var server = app.listen(server_port, argv.public ? undefined : server_ip_address, function() {
+    var server = app.listen(server_port, argv.public ? undefined : server_ip_address, function () {
         if (argv.public) {
             console.log('TacMap development server running publicly.  Connect to http://localhost:%d/', server.address().port);
         }
@@ -151,7 +151,7 @@
             console.log('TacMap development server running locally.  Connect to http://localhost:%d/', server.address().port);
         }
     });
-    server.on('error', function(e) {
+    server.on('error', function (e) {
         if (e.code === 'EADDRINUSE') {
             console.log('Error: Port %d is already in use, select a different port.', argv.port);
             console.log('Example: node server.js --port %d', argv.port + 1);
@@ -165,76 +165,76 @@
         console.log(e);
         process.exit(1);
     });
-    server.on('close', function() {
+    server.on('close', function () {
         console.log('TacMap server stopped.');
     });
-    process.on('SIGINT', function() {
-        server.close(function() {
+    process.on('SIGINT', function () {
+        server.close(function () {
             process.exit(0);
         });
     });
-    app.get('/', function(req, res) {
+    app.get('/', function (req, res) {
         res.sendFile(__dirname + '/public/unit.html');
     });
-    
-    app.get('/node_modules/*', function(req, res) {
+
+    app.get('/node_modules/*', function (req, res) {
         res.sendFile(__dirname + '/' + req.url);
     });
-    
-    app.get('/server', function(req, res) {
+
+    app.get('/server', function (req, res) {
         res.sendFile(__dirname + '/public/server.html');
     });
 
-    app.get('/unit', function(req, res) {
+    app.get('/unit', function (req, res) {
         res.sendFile(__dirname + '/public/unit.html');
     });
 
-    app.get('/json/*', function(req, res) {
+    app.get('/json/*', function (req, res) {
         res.sendFile(__dirname + '/public' + req.url);
     });
 
-    app.post('/json/*', function(req, res) {
-        fs.writeFile(__dirname + '/public' + req.url, JSON.stringify(req.body), function() {
+    app.post('/json/*', function (req, res) {
+        fs.writeFile(__dirname + '/public' + req.url, JSON.stringify(req.body), function () {
             res.end();
         });
     });
 
-    app.put('/json/*', function(req, res) {
-        fs.writeFile(__dirname + '/public' + req.url, JSON.stringify(req.body), function() {
+    app.put('/json/*', function (req, res) {
+        fs.writeFile(__dirname + '/public' + req.url, JSON.stringify(req.body), function () {
             res.end();
         });
     });
 
-    app.put('/xml/*', function(req, res) {
+    app.put('/xml/*', function (req, res) {
         console.log("Put " + req.url);
         console.log(req.body);
-        fs.writeFile(__dirname + '/public' + req.url, req.body, function() {
+        fs.writeFile(__dirname + '/public' + req.url, req.body, function () {
             res.end();
         });
     });
 
     app.post('/entity/*'),
-        function(req, res) {
+        function (req, res) {
             console.log("Post entity " + req.url);
             console.log(req.body);
-            fs.writeFile(__dirname + '/public' + req.url, req.body, function() {
+            fs.writeFile(__dirname + '/public' + req.url, req.body, function () {
                 res.end();
             });
         }
 
-    var io = require('socket.io').listen(server);
-    var missionid = "Default Mission";
+    var io = require('socket.io')(server);
+    var missionid = "Default";
     var missiondata = [];
     var servers = [];
     var units = [];
     var allconnections = [];
-    var missionRunning = false;
+    missionRunning = false;
 
-    io.on('connection', function(socket) {
+    io.on('connection', function (socket) {
 
         allconnections.push(socket);
 
-        socket.on('disconnect', function() {
+        socket.on('disconnect', function () {
             var i = allconnections.indexOf(socket);
             console.log(i.id + " disconnected");
             delete allconnections[i];
@@ -244,12 +244,12 @@
             message: 'Msg Socket Ready',
             socketid: socket.id
         });
-        socket.on('server connected', function(data) {
+        socket.on('server connected', function (data) {
             console.log("server connect to socket: " + data.socketid + ", mission:" + data.missionid);
             servers.push({
                 server: data.socketid
             });
-            if (missionid === "Default Mission") {
+            if (missionid === "Default") {
                 missiondata = data.missiondata;
                 io.emit('init server', {
                     target: "server",
@@ -268,7 +268,7 @@
                 io.emit('start mission');
             }
         });
-        socket.on('unit connected', function(data) {
+        socket.on('unit connected', function (data) {
             console.log("units connect: " + data.id + " set mission: " + missionid);
             units.push({
                 unit: data.id
@@ -278,11 +278,11 @@
                 missiondata: missiondata
             });
         });
-        socket.on('send msg', function(data) {
-            console.log('send msg from ' + data.message.unit + ' to ' + data.net);
-            socket.to(data.net).emit('msg sent', data);
+        socket.on('send msg', function (data) {
+            console.log('send msg from ' + data.message.unit + ' to ' + data.message.net);
+            io.emit('msg sent', data);
         });
-        socket.on('unit join', function(data) {
+        socket.on('unit join', function (data) {
             //console.log(data.unitid + ' joined ' + data.netname);
             socket.join(data.netname);
             io.emit('unit joined', {
@@ -290,7 +290,7 @@
                 netname: data.netname
             });
         });
-        socket.on('server join', function(data) {
+        socket.on('server join', function (data) {
             //console.log(data.serverid + ' joined ' + data.netname);
             socket.join(data.netname);
             io.emit('server joined', {
@@ -298,7 +298,7 @@
                 netname: data.netname
             });
         });
-        socket.on('server leave', function(data) {
+        socket.on('server leave', function (data) {
             // console.log(data.serverid + ' left ' + data.netname);
             socket.leave(data.netname);
             io.emit('server left', {
@@ -306,7 +306,7 @@
                 netname: data.netname
             });
         });
-        socket.on('unit leave', function(data) {
+        socket.on('unit leave', function (data) {
             //console.log(data.unitid + ' left ' + data.netname);
             socket.leave(data.netname);
             io.emit('unit left', {
@@ -314,11 +314,11 @@
                 netname: data.netname
             });
         });
-        socket.on('add entity', function(data) {
+        socket.on('add entity', function (data) {
             console.log("emit add entity: " + data._id);
             io.emit('add entity', data);
         });
-        socket.on('set mission', function(data) {
+        socket.on('set mission', function (data) {
             console.log("set mission: " + data.missionid);
             missionid = data.missionid;
             missiondata = data.missiondata;
@@ -328,15 +328,15 @@
                 missiondata: missiondata
             });
         });
-        socket.on('mission running', function() {
+        socket.on('mission running', function () {
             missionRunning = true;
             io.emit('start mission');
         });
-        socket.on('mission stopped', function() {
+        socket.on('mission stopped', function () {
             missionRunning = false;
             io.emit('stop mission');
         });
-        socket.on('mission time', function(data) {
+        socket.on('mission time', function (data) {
             io.emit('set time', data);
         });
     });
