@@ -25,8 +25,8 @@
     var cesium = require('./geoserver/cesiumserver');
     //
     var cors = require('cors');
-    var http = require('http');
-    var server_port = 8080;
+
+    var server_port = 9090;
     var yargs = require('yargs').options({
         'port': {
             'default': server_port,
@@ -174,7 +174,7 @@
         });
     });
     app.get('/', function (req, res) {
-        res.sendFile(__dirname + '/public/unit.html');
+        res.sendFile(__dirname + '/public/server.html');
     });
 
     app.get('/node_modules/*', function (req, res) {
@@ -228,15 +228,14 @@
     var servers = [];
     var units = [];
     var allconnections = [];
-    missionRunning = false;
 
     io.on('connection', function (socket) {
 
         allconnections.push(socket);
 
-        socket.on('disconnect', function () {
+        socket.on('socketDisconnect', function () {
             var i = allconnections.indexOf(socket);
-            console.log(i.id + " disconnected");
+            console.log(i.id + "Socjket Disconnected");
             delete allconnections[i];
         });
         // Use socket to communicate with this particular unit only, sending it it's own id

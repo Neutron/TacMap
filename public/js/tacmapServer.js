@@ -31,12 +31,7 @@ var viewer = new Cesium.Viewer('cesiumContainer', {
     baseLayerPicker: true,
     navigationHelpButton: false,
     navigationInstructionsInitiallyVisible: false,
-    //    imageryProvider: new Cesium.ArcGisMapServerImageryProvider({
-    //        url: 'https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer'
-    //    }),
-    //    imageryProvider: new Cesium.ArcGisMapServerImageryProvider({
-    //        url: '//services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer'
-    //    }), 
+
     imageryProvider: new Cesium.BingMapsImageryProvider({
         url: '//dev.virtualearth.net',
         key: 'AtO-6nT2HLG-BF4IvAbGvEppiYqeW9W4KSemE-7wVH_9GgWnThseKQdwe4-xj-S0',
@@ -57,8 +52,8 @@ var viewer = new Cesium.Viewer('cesiumContainer', {
     geocoder: false
 });
 var scene = viewer.scene;
-var xj = new X2JS();
 var TacMapServer = angular.module('TacMapServer', ['indexedDB']);
+
 TacMapServer.config(function ($indexedDBProvider) {
     $indexedDBProvider.connection(databasename).upgradeDatabase(1, function (event, db, tx) {
         console.log("initDb");
