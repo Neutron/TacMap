@@ -263,9 +263,6 @@
                     missiondata: missiondata
                 });
             }
-            if (missionRunning) {
-                io.emit('start mission');
-            }
         });
         socket.on('unit connected', function (data) {
             console.log("units connect: " + data.id + " set mission: " + missionid);
