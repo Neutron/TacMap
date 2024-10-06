@@ -18,12 +18,9 @@
     "socket.io-client": "4.8.0"
   },
   "dependencies": {
-    "angular": "^1.8.3",
-    "body-parser": "1.20.3",
-    "cesium": "1.121.1",
-    "cors": "2.8.5",
-    "eslint": "9.11.0",
-    "express": "4.21.0",
+    "angular": "1.8.3",
+    "cesium": "1.122.0",
+    "eslint": "9.12.0",
     "socket.io": "4.8.0",
     "yargs": "17.7.2"
   },
